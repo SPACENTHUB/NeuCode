@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>THE NEURICH CODE — The Private Manual of Asymmetric Wealth</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #000000;
+            --bg-secondary: #0a0a0f;
+            --text: #f7f5f2;
+            --text-secondary: #e2e0dd;
+            --gold: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.5);
+            --neon: #22d3ee;
+            --neon-glow: rgba(34, 211, 238, 0.5);
+            --purple: #a855f7;
+            --purple-glow: rgba(168, 85, 247, 0.5);
+            --green: #4ade80;
+            --green-glow: rgba(74, 222, 128, 0.5);
+            --muted: #9aa0a8;
+            --success: #4ade80;
+            --error: #f87171;
+            --urgent: #ff3b30;
+            --card-bg: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.007));
+            --card-border: 1px solid rgba(255,255,255,0.04);
+            --transition-slow: 0.5s cubic-bezier(0.2, 0.9, 0.3, 1);
+            --transition-fast: 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            overflow: hidden;
+            line-height: 1.5;
+            font-synthesis: none;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            perspective: 1000px;
+        }
+
+        /* Force landscape on mobile */
+        @media (max-width: 768px) and (orientation: portrait) {
+            body::before {
+                content: "Please rotate your device";
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: var(--bg);
+                color: var(--gold);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                font-weight: 700;
+                z-index: 10000;
+                text-align: center;
+                padding: 20px;
+            }
+            
+            .stage {
+                display: none;
+            }
+        }
+
+        .stage {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Atmospheric Background */
+        .atmosphere {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.3;
+            background: 
+                radial-gradient(circle at 20% 50%, var(--purple-glow) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, var(--gold-glow) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, var(--neon-glow) 0%, transparent 50%);
+            animation: atmosphereShift 20s ease-in-out infinite;
+        }
+
+        @keyframes atmosphereShift {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .left-panel {
+            padding: 40px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            backdrop-filter: blur(12px) saturate(180%);
+            border: var(--card-border);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            transform-style: preserve-3d;
+            transition: var(--transition-slow);
+            position: relative;
+            z-index: 2;
+        }
+
+        .left-panel:hover {
+            transform: translateY(-5px) rotateX(2deg);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+        }
+
+        .kicker {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            font-weight: 900;
+            font-size: 14px;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 5vw, 56px);
+            margin: 6px 0;
+            color: var(--text);
+            line-height: 1.02;
+            font-weight: 900;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transform: translateZ(30px);
+        }
+
+        .lead {
+            color: var(--muted);
+            margin: 20px 0;
+            font-size: 18px;
+            max-width: 100%;
+            line-height: 1.6;
+            transform: translateZ(20px);
+        }
+
+        /* Stock Bar */
+        .stock-container {
+            margin: 20px 0;
+            transform: translateZ(15px);
+        }
+
+        .stock-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .stock-label strong {
+            color: var(--gold);
+            font-weight: 800;
+        }
+
+        .stock-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(212,175,55,0.2);
+        }
+
+        .stock-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), var(--neon));
+            border-radius: 50px;
+            transition: width 1s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px var(--gold-glow);
+        }
+
+        .stock-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .stock-remaining {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 800;
+            font-size: 12px;
+            color: var(--text);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            z-index: 2;
+        }
+
+        /* Trust Signals */
+        .trust-signals {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            transform: translateZ(10px);
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: var(--muted);
+            padding: 5px 10px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .trust-item i {
+            color: var(--success);
+            font-size: 14px;
+        }
+
+        /* Dramatic Countdown */
+        .countdown {
+            display: flex;
+            gap: 10px;
+            margin: 25px 0;
+            transform: translateZ(10px);
+            justify-content: center;
+        }
+
+        .countdown-item {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px;
+            border-radius: 10px;
+            min-width: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .countdown-item.pulse {
+            animation: urgentPulse 1s ease;
+        }
+
+        @keyframes urgentPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); background: rgba(255,59,48,0.1); }
+        }
+
+        .countdown-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(212,175,55,0.1), transparent);
+            animation: shine 3s infinite;
+            z-index: 1;
+        }
+
+        .countdown-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--urgent);
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 0 10px rgba(255,59,48,0.5);
+        }
+
+        .countdown-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--muted);
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Dramatic Pricing */
+        .pricing {
+            margin: 25px 0;
+            text-align: center;
+            position: relative;
+            min-height: 150px;
+            transform: translateZ(20px);
+        }
+
+        .anchor-price {
+            font-size: 56px;
+            font-weight: 900;
+            color: var(--text);
+            position: absolute;
+            left: 50%;
+            top: 20px;
+            transform: translateX(-50%);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+            text-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+
+        .anchor-price.slashing {
+            animation: dramaticSlash 2s ease forwards;
+        }
+
+        @keyframes dramaticSlash {
+            0% {
+                transform: translateX(-50%) scale(1.2);
+                opacity: 1;
+            }
+            30% {
+                transform: translateX(-50%) scale(1.3) rotate(5deg);
+                color: var(--urgent);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-50px) scale(0.7) rotate(-5deg);
+                text-decoration: line-through;
+                color: var(--muted);
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateX(-50%) translateY(-50px) scale(0.5);
+                text-decoration: line-through;
+                color: var(--muted);
+                opacity: 0.4;
+                font-size: 28px;
+            }
+        }
+
+        .current-price {
+            font-size: 72px;
+            font-weight: 900;
+            color: var(--gold);
+            text-shadow: 0 0 30px var(--gold-glow), 0 0 60px var(--gold-glow);
+            position: absolute;
+            left: 50%;
+            top: 20px;
+            transform: translateX(-50%) scale(0);
+            opacity: 0;
+            transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .current-price.revealed {
+            transform: translateX(-50%) scale(1);
+            opacity: 1;
+            animation: priceGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes priceGlow {
+            0%, 100% { 
+                transform: translateX(-50%) scale(1);
+                filter: brightness(1);
+            }
+            50% { 
+                transform: translateX(-50%) scale(1.05);
+                filter: brightness(1.2);
+            }
+        }
+
+        .current-price.fluctuating {
+            animation: priceFluctuate 0.3s ease;
+        }
+
+        @keyframes priceFluctuate {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.1) rotate(2deg); }
+        }
+
+        .discount-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: linear-gradient(90deg, var(--urgent), rgba(255,59,48,0.8));
+            border-radius: 30px;
+            font-weight: 800;
+            color: var(--text);
+            font-size: 18px;
+            margin: 90px 0 10px 0;
+            animation: badgePulse 1.5s ease-in-out infinite;
+            transform: scale(0);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .discount-badge.revealed {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255,59,48,0.5); }
+            50% { box-shadow: 0 0 40px rgba(255,59,48,0.8); }
+        }
+
+        .offer-details {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .offer-details.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .offer-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .offer-item i {
+            color: var(--success);
+        }
+
+        /* CTA Button */
+        .cta {
+            margin-top: 20px;
+            padding: 22px 40px;
+            background: linear-gradient(135deg, var(--gold), rgba(212,175,55,0.8), var(--gold));
+            background-size: 200% 200%;
+            color: #041217;
+            border-radius: 12px;
+            border: none;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 12px 42px rgba(212,175,55,0.3);
+            transition: var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+            width: 100%;
+            transform: translateZ(20px);
+            animation: ctaGlow 2s ease-in-out infinite, backgroundShift 3s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes ctaGlow {
+            0%, 100% { 
+                box-shadow: 0 12px 42px rgba(212,175,55,0.3);
+                transform: translateZ(20px) scale(1);
+            }
+            50% { 
+                box-shadow: 0 12px 60px rgba(212,175,55,0.5);
+                transform: translateZ(20px) scale(1.02);
+            }
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .cta:hover::before {
+            left: 100%;
+        }
+
+        .cta:hover {
+            transform: translateY(-2px) scale(1.03) translateZ(20px);
+            box-shadow: 0 16px 50px rgba(212,175,55,0.4);
+        }
+
+        .help-btn {
+            margin-top: 15px;
+            padding: 12px 20px;
+            background: transparent;
+            color: var(--text);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transform: translateZ(10px);
+        }
+
+        .help-btn:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: var(--gold);
+        }
+
+        .right-panel {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+        }
+
+        .product-image {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            transition: all 0.5s ease;
+            transform: translateZ(30px) rotateY(5deg) rotateX(5deg);
+        }
+
+        .product-image:hover {
+            transform: translateZ(40px) scale(1.05) rotateY(0) rotateX(0);
+            box-shadow: 0 30px 60px rgba(212,175,55,0.3);
+        }
+
+        /* Sistema de Partículas Fractais */
+        .fractal-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .fractal-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: fractal-pulse 4s ease-in-out infinite;
+            transform-origin: center;
+            box-shadow: 0 0 15px currentColor;
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fractal-particle.melting {
+            animation: none;
+            border-radius: 50% 40% 60% 30%;
+            filter: blur(3px);
+        }
+
+        @keyframes liquidMorph {
+            0% {
+                transform: translate(var(--startX), var(--startY)) scale(1) rotate(0deg);
+                opacity: 1;
+                border-radius: 50%;
+                filter: blur(0);
+            }
+            25% {
+                transform: translate(var(--midX1), var(--midY1)) scale(2) rotate(90deg);
+                opacity: 0.9;
+                border-radius: 30% 70% 40% 60%;
+                filter: blur(1px);
+            }
+            50% {
+                transform: translate(var(--midX2), var(--midY2)) scale(1.5) rotate(180deg);
+                opacity: 0.8;
+                border-radius: 60% 40% 70% 30%;
+                filter: blur(2px);
+            }
+            75% {
+                transform: translate(var(--midX3), var(--midY3)) scale(0.8) rotate(270deg);
+                opacity: 0.6;
+                border-radius: 40% 60% 30% 70%;
+                filter: blur(4px);
+            }
+            100% {
+                transform: translate(var(--endX), var(--endY)) scale(0) rotate(360deg);
+                opacity: 0;
+                border-radius: 50%;
+                filter: blur(10px);
+            }
+        }
+
+        /* Frases de CTA */
+        .cta-phrase {
+            position: fixed;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--gold);
+            text-shadow: 0 0 10px var(--gold-glow), 0 0 20px var(--gold-glow);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 6;
+            text-align: center;
+            white-space: nowrap;
+            transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cta-phrase.melting {
+            animation: phraseLiquidMelt 2s ease forwards;
+        }
+
+        @keyframes phraseLiquidMelt {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                filter: blur(0);
+                text-shadow: 0 0 10px var(--gold-glow);
+            }
+            30% {
+                transform: translate(-50%, calc(-50% + 30px)) scale(1.2) rotate(5deg) skewY(10deg);
+                filter: blur(1px);
+                color: var(--neon);
+                text-shadow: 0 10px 20px var(--neon-glow);
+            }
+            60% {
+                transform: translate(-50%, calc(-50% + 100px)) scale(0.8) rotate(-10deg) skewY(-20deg);
+                filter: blur(3px);
+                opacity: 0.5;
+                color: var(--purple);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, calc(-50% + 300px)) scale(0.1) rotate(180deg);
+                filter: blur(15px);
+            }
+        }
+
+        /* Notificações de Compra */
+        .purchase-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: linear-gradient(90deg, rgba(212,175,55,0.95), rgba(34,211,238,0.95));
+            color: #041217;
+            border-radius: 10px;
+            font-weight: 600;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(100px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            z-index: 100;
+            max-width: 300px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .purchase-notification::before {
+            content: '✨';
+            margin-right: 8px;
+        }
+
+        /* Modal de Gateway Fantástico */
+        .gateway-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .gateway-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(212,175,55,0.1), rgba(0,0,0,0.95));
+            backdrop-filter: blur(20px);
+            animation: overlayPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes overlayPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.9; }
+        }
+
+        .modal-content {
+            position: relative;
+            width: 90%;
+            max-width: 700px;
+            background: linear-gradient(135deg, rgba(30,30,40,0.98), rgba(15,15,25,0.99), rgba(30,30,40,0.98));
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 
+                0 25px 100px rgba(212,175,55,0.3),
+                0 0 200px rgba(212,175,55,0.1),
+                inset 0 0 50px rgba(212,175,55,0.05);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            transform-style: preserve-3d;
+            transform: scale(0) rotateX(90deg) rotateY(90deg);
+            opacity: 0;
+            transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1001;
+            overflow: visible;
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--gold), var(--neon), var(--purple), var(--gold));
+            border-radius: 30px;
+            z-index: -1;
+            animation: borderRotate 3s linear infinite;
+        }
+
+        @keyframes borderRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .gateway-modal.active .modal-content {
+            transform: scale(1) rotateX(0) rotateY(0);
+            opacity: 1;
+            animation: modalBounce 0.8s ease;
+        }
+
+        @keyframes modalBounce {
+            0% { transform: scale(0) rotateX(90deg) rotateY(90deg); }
+            50% { transform: scale(1.1) rotateX(0) rotateY(0); }
+            75% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            color: transparent;
+            background: linear-gradient(90deg, var(--gold), var(--neon), var(--gold));
+            background-clip: text;
+            -webkit-background-clip: text;
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-align: center;
+            transform: translateZ(30px);
+            animation: titleShine 2s ease-in-out infinite;
+        }
+
+        @keyframes titleShine {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        .modal-subtitle {
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 30px;
+            transform: translateZ(20px);
+            font-size: 16px;
+        }
+
+        .gateways {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+            transform: translateZ(10px);
+            position: relative;
+            z-index: 2;
+        }
+
+        .gateway {
+            background: linear-gradient(145deg, rgba(40,40,50,0.6), rgba(20,20,30,0.8));
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gateway::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent);
+            transition: 0.5s;
+        }
+
+        .gateway:hover::before {
+            left: 100%;
+        }
+
+        .gateway:hover {
+            transform: translateY(-10px) translateZ(20px) scale(1.05);
+            border-color: var(--gold);
+            box-shadow: 0 15px 40px rgba(212,175,55,0.3);
+            background: linear-gradient(145deg, rgba(60,60,70,0.7), rgba(30,30,40,0.9));
+        }
+
+        .gateway-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--gold), var(--neon));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 0 10px var(--gold-glow));
+        }
+
+        .gateway-name {
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .gateway-desc {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform: translateZ(20px);
+            z-index: 3;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-close:hover {
+            background: rgba(212,175,55,0.2);
+            transform: rotate(90deg) translateZ(20px) scale(1.1);
+            border-color: var(--gold);
+        }
+
+        /* Success Indicators */
+        .success-indicator {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background: linear-gradient(90deg, var(--success), rgba(74,222,128,0.8));
+            color: white;
+            border-radius: 30px;
+            font-weight: 700;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 200;
+            animation: successPop 3s ease;
+        }
+
+        @keyframes successPop {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px) scale(0);
+            }
+            20% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1.1);
+            }
+            40% {
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+            80% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px) scale(0.5);
+            }
+        }
+
+        /* Animações */
+        @keyframes fractal-pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes phrase-appear {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5) rotate(-5deg);
+            }
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1) rotate(2deg);
+            }
+            40% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1) rotate(0);
+            }
+            80% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1) rotate(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.2) rotate(5deg);
+            }
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes gateway-appear {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9) rotateX(20deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1) rotateX(0);
+            }
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .countdown {
+                flex-wrap: wrap;
+            }
+            
+            .countdown-item {
+                min-width: 55px;
+                padding: 8px;
+            }
+            
+            .countdown-value {
+                font-size: 20px;
+            }
+            
+            .gateways {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .product-image {
+                max-width: 280px;
+            }
+            
+            .current-price {
+                font-size: 48px;
+            }
+            
+            .anchor-price {
+                font-size: 42px;
+            }
+            
+            .cta-phrase {
+                font-size: 18px;
+            }
+            
+            .modal-content {
+                padding: 30px;
+            }
+            
+            .modal-title {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="atmosphere"></div>
+    <div class="fractal-particles" id="fractalParticles"></div>
+    <div id="ctaPhrasesContainer"></div>
+    <div id="purchaseNotifications"></div>
+    <div id="successIndicators"></div>
+
+    <div class="stage">
+        <div class="container">
+            <div class="left-panel">
+                <div class="kicker">SpacentHubs · NeuRich</div>
+                <h1 class="title">THE NEURICH CODE</h1>
+                <p class="lead">The Private Manual of Asymmetric Wealth for the Digital Age. A living architecture that adapts to your gestures and intent — instant, recurring, and asymmetric.</p>
+                
+                <!-- Stock Bar -->
+                <div class="stock-container">
+                    <div class="stock-label">
+                        <span>🔥 <strong>FOUNDER ACCESS</strong></span>
+                        <span id="stockText">873/1000 Available</span>
+                    </div>
+                    <div class="stock-bar">
+                        <div class="stock-fill" id="stockFill" style="width: 87.3%">
+                            <span class="stock-remaining" id="stockRemaining">LIMITED COPIES</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trust Signals -->
+                <div class="trust-signals">
+                    <div class="trust-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>256-bit SSL</span>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-award"></i>
+                        <span>Money-Back</span>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-users"></i>
+                        <span>12,847+ Students</span>
+                    </div>
+                </div>
+                
+                <!-- Dramatic Countdown -->
+                <div class="countdown">
+                    <div class="countdown-item">
+                        <div class="countdown-value" id="hours">71</div>
+                        <div class="countdown-label">Hours</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-value" id="minutes">59</div>
+                        <div class="countdown-label">Minutes</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-value" id="seconds">59</div>
+                        <div class="countdown-label">Seconds</div>
+                    </div>
+                </div>
+                
+                <div class="pricing">
+                    <div class="anchor-price" id="anchorPrice">$297</div>
+                    <div class="current-price" id="currentPrice">$17</div>
+                    <div class="discount-badge" id="discountBadge">94% OFF</div>
+                    <div class="offer-details" id="offerDetails">
+                        <div class="offer-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>First 1000 Copies</span>
+                        </div>
+                        <div class="offer-item">
+                            <i class="fas fa-infinity"></i>
+                            <span>Lifetime Access</span>
+                        </div>
+                        <div class="offer-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>100% Secure</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="cta" id="ctaBtn"><i class="fas fa-crown"></i> SECURE FOUNDER ACCESS NOW</button>
+                <button class="help-btn" id="helpBtn"><i class="fas fa-life-ring"></i> Need Help? Contact Support</button>
+            </div>
+            
+            <div class="right-panel">
+                <img src="https://i.imgur.com/O4keHuk.jpg" alt="THE NEURICH CODE" class="product-image">
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Gateways Fantástico -->
+    <div class="gateway-modal" id="gatewayModal">
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="modal-content">
+            <div class="modal-close" id="modalClose"><i class="fas fa-times"></i></div>
+            <h2 class="modal-title">Choose Your Gateway to Wealth</h2>
+            <p class="modal-subtitle">Select your preferred checkout method • Instant Access</p>
+            
+            <div class="gateways">
+                <div class="gateway" data-gateway="hotmart">
+                    <div class="gateway-icon"><i class="fas fa-globe-americas"></i></div>
+                    <div class="gateway-name">Hotmart</div>
+                    <div class="gateway-desc">Brasil & Global</div>
+                </div>
+                <div class="gateway" data-gateway="gumroad">
+                    <div class="gateway-icon"><i class="fas fa-minimize"></i></div>
+                    <div class="gateway-name">Gumroad</div>
+                    <div class="gateway-desc">Minimal & Clean</div>
+                </div>
+                <div class="gateway" data-gateway="jvzoo">
+                    <div class="gateway-icon"><i class="fas fa-handshake"></i></div>
+                    <div class="gateway-name">JVZoo</div>
+                    <div class="gateway-desc">Affiliate Network</div>
+                </div>
+                <div class="gateway" data-gateway="warriorplus">
+                    <div class="gateway-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="gateway-name">WarriorPlus</div>
+                    <div class="gateway-desc">Instant Checkout</div>
+                </div>
+                <div class="gateway" data-gateway="payhip">
+                    <div class="gateway-icon"><i class="fas fa-palette"></i></div>
+                    <div class="gateway-name">Payhip</div>
+                    <div class="gateway-desc">Elegant Experience</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuração inicial
+            const gatewayModal = document.getElementById('gatewayModal');
+            const ctaBtn = document.getElementById('ctaBtn');
+            const modalOverlay = document.getElementById('modalOverlay');
+            const modalClose = document.getElementById('modalClose');
+            const helpBtn = document.getElementById('helpBtn');
+            const fractalParticles = document.getElementById('fractalParticles');
+            const ctaPhrasesContainer = document.getElementById('ctaPhrasesContainer');
+            const purchaseNotifications = document.getElementById('purchaseNotifications');
+            const successIndicators = document.getElementById('successIndicators');
+            
+            // Stock management
+            let currentStock = 873;
+            const totalStock = 1000;
+            
+            // Price elements
+            const anchorPrice = document.getElementById('anchorPrice');
+            const currentPrice = document.getElementById('currentPrice');
+            const discountBadge = document.getElementById('discountBadge');
+            const offerDetails = document.getElementById('offerDetails');
+            
+            // Initialize dramatic price reveal
+            function initDramaticPriceReveal() {
+                // Start with anchor price visible
+                anchorPrice.style.opacity = '1';
+                currentPrice.style.opacity = '0';
+                discountBadge.style.opacity = '0';
+                offerDetails.style.opacity = '0';
+                
+                // After 2 seconds, start the dramatic slash
+                setTimeout(() => {
+                    anchorPrice.classList.add('slashing');
+                    
+                    // Reveal current price after slash animation
+                    setTimeout(() => {
+                        currentPrice.classList.add('revealed');
+                        currentPrice.style.opacity = '1';
+                        
+                        // Show discount badge
+                        setTimeout(() => {
+                            discountBadge.classList.add('revealed');
+                            offerDetails.classList.add('revealed');
+                        }, 500);
+                    }, 1500);
+                }, 2000);
+            }
+            
+            initDramaticPriceReveal();
+            
+            // Price fluctuation system
+            const priceFluctuations = [
+                { price: 27, color: 'var(--purple)' },
+                { price: 37, color: 'var(--neon)' },
+                { price: 47, color: 'var(--urgent)' },
+                { price: 57, color: 'var(--purple)' },
+                { price: 67, color: 'var(--neon)' },
+                { price: 77, color: 'var(--urgent)' },
+                { price: 87, color: 'var(--purple)' },
+                { price: 97, color: 'var(--neon)' },
+                { price: 17, color: 'var(--gold)' } // Return to original
+            ];
+            
+            let fluctuationIndex = 0;
+            let isFluctuating = false;
+            
+            function fluctuatePrice() {
+                if (isFluctuating) return;
+                isFluctuating = true;
+                fluctuationIndex = 0;
+                
+                const fluctuationInterval = setInterval(() => {
+                    if (fluctuationIndex < priceFluctuations.length) {
+                        const fluctuation = priceFluctuations[fluctuationIndex];
+                        currentPrice.textContent = `$${fluctuation.price}`;
+                        currentPrice.style.color = fluctuation.color;
+                        currentPrice.classList.add('fluctuating');
+                        
+                        setTimeout(() => {
+                            currentPrice.classList.remove('fluctuating');
+                        }, 300);
+                        
+                        fluctuationIndex++;
+                    } else {
+                        clearInterval(fluctuationInterval);
+                        isFluctuating = false;
+                        currentPrice.style.color = 'var(--gold)';
+                    }
+                }, 400);
+            }
+            
+            // Frases de CTA persuasivas (99% inglês, 1% português)
+            const ctaPhrases = [
+                "Join the 1% who know the secret",
+                "Wealth is a code. Crack it.",
+                "Your future self will thank you",
+                "Stop wondering. Start owning.",
+                "The blueprint to financial freedom",
+                "This is not a dream. It's a plan.",
+                "Act now. Regret never.",
+                "The smartest investment you'll ever make",
+                "From zero to hero in record time",
+                "The art of wealth, mastered",
+                "Your breakthrough moment is here",
+                "Unlock doors you didn't know existed",
+                "The end of financial anxiety starts now",
+                "Why stay average when you can become exceptional?",
+                "The system works if you work the system",
+                "Every second counts. Make it yours.",
+                "Success loves speed. Don't wait.",
+                "Transform your reality in 72 hours",
+                "The code that changes everything",
+                "Limited time. Unlimited potential.",
+                "Don't let fear decide your future",
+                "Winners act. Losers react.",
+                "The price of hesitation is poverty",
+                "Fortune favors the bold",
+                "Your wealth journey starts here",
+                "Break the chains of mediocrity",
+                "This is your sign to level up",
+                "Sua chance única está aqui", // Portuguese
+                "The revolution begins with you",
+                "Stop scrolling. Start scaling.",
+                "One decision away from a new life",
+                "The wealthy think differently. Learn how.",
+                "Your empire awaits",
+                "Become ungovernable. Become wealthy.",
+                "The matrix has you. Break free.",
+                "Poverty is a choice. Choose wealth.",
+                "The secret they don't want you to know",
+                "Your golden ticket is here",
+                "Escape the 9-5 matrix forever",
+                "Financial freedom is 1 click away"
+            ];
+            
+            // Mensagens de compra em tempo real
+            const purchaseMessages = [
+                "John D. from New York just secured founder access",
+                "Maria S. from São Paulo acabou de garantir o código", // Portuguese
+                "Alexandre C. from Paris joined the inner circle",
+                "Li Wei from Shanghai cracked the code",
+                "Emma K. from Berlin transformed their future",
+                "Raj P. from Mumbai is now on the path to wealth",
+                "Sarah M. from Toronto just invested in their future",
+                "Carlos R. from Mexico City acquired the manual",
+                "Anna B. from Moscow accessed the asymmetric advantage",
+                "David L. from Sydney just secured his copy",
+                "Yuki T. from Tokyo unlocked the wealth code",
+                "Pedro A. from Lisbon joined the founders",
+                "Isabella R. from Rome is now part of the elite",
+                "James W. from London secured lifetime access",
+                "Sofia M. from Madrid just changed her life",
+                "Ahmed K. from Dubai invested in success",
+                "Nina P. from Stockholm cracked the wealth formula",
+                "Lucas B. from Rio de Janeiro entrou para o clube", // Portuguese
+                "Olivia H. from Los Angeles is now unstoppable",
+                "Marcus T. from Frankfurt secured his future"
+            ];
+            
+            // Contagem regressiva dramática de 72 horas
+            const countdownDate = new Date();
+            countdownDate.setHours(countdownDate.getHours() + 72);
+            
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const distance = countdownDate - now;
+                
+                const hours = Math.floor(distance / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                const hoursEl = document.getElementById('hours');
+                const minutesEl = document.getElementById('minutes');
+                const secondsEl = document.getElementById('seconds');
+                
+                hoursEl.textContent = hours.toString().padStart(2, '0');
+                minutesEl.textContent = minutes.toString().padStart(2, '0');
+                secondsEl.textContent = seconds.toString().padStart(2, '0');
+                
+                // Dramatic pulse every second
+                secondsEl.parentElement.classList.add('pulse');
+                setTimeout(() => {
+                    secondsEl.parentElement.classList.remove('pulse');
+                }, 500);
+                
+                // Extra dramatic at certain thresholds
+                if (hours < 24) {
+                    hoursEl.style.color = 'var(--urgent)';
+                    hoursEl.style.fontSize = '26px';
+                }
+                if (hours < 12) {
+                    minutesEl.style.color = 'var(--urgent)';
+                    minutesEl.style.fontSize = '26px';
+                }
+                if (hours < 1) {
+                    secondsEl.style.fontSize = '28px';
+                    secondsEl.style.textShadow = '0 0 20px rgba(255,59,48,0.8)';
+                }
+            }
+            
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+            
+            // Update stock bar
+            function updateStock() {
+                const stockFill = document.getElementById('stockFill');
+                const stockText = document.getElementById('stockText');
+                const stockRemaining = document.getElementById('stockRemaining');
+                
+                const percentage = (currentStock / totalStock) * 100;
+                stockFill.style.width = `${percentage}%`;
+                stockText.textContent = `${currentStock}/${totalStock} Available`;
+                
+                if (currentStock < 100) {
+                    stockRemaining.textContent = 'ALMOST GONE!';
+                    stockRemaining.style.color = 'var(--urgent)';
+                    stockFill.style.background = 'linear-gradient(90deg, var(--urgent), var(--gold))';
+                } else if (currentStock < 300) {
+                    stockRemaining.textContent = 'SELLING FAST';
+                    stockRemaining.style.color = 'var(--gold)';
+                } else {
+                    stockRemaining.textContent = 'LIMITED COPIES';
+                }
+            }
+            
+            updateStock();
+            
+            // Sistema de Partículas Fractais
+            const particles = [];
+            const particleCount = 300;
+            
+            function createFractalParticles() {
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'fractal-particle';
+                    
+                    // Posição aleatória
+                    const posX = Math.random() * 100;
+                    const posY = Math.random() * 100;
+                    
+                    // Cor aleatória (dourado, azul neon ou roxo)
+                    const colorChoice = Math.random();
+                    if (colorChoice < 0.4) {
+                        particle.style.backgroundColor = 'var(--gold)';
+                        particle.style.color = 'var(--gold)';
+                    } else if (colorChoice < 0.7) {
+                        particle.style.backgroundColor = 'var(--neon)';
+                        particle.style.color = 'var(--neon)';
+                    } else if (colorChoice < 0.9) {
+                        particle.style.backgroundColor = 'var(--purple)';
+                        particle.style.color = 'var(--purple)';
+                    } else {
+                        particle.style.backgroundColor = 'var(--text)';
+                        particle.style.color = 'var(--text)';
+                    }
+                    
+                    // Tamanho aleatório
+                    const size = Math.random() * 10 + 4;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    // Posicionamento
+                    particle.style.left = `${posX}%`;
+                    particle.style.top = `${posY}%`;
+                    
+                    // Atraso de animação aleatório
+                    particle.style.animationDelay = `${Math.random() * 4}s`;
+                    particle.style.animationDuration = `${3 + Math.random() * 3}s`;
+                    
+                    fractalParticles.appendChild(particle);
+                    particles.push({
+                        element: particle,
+                        x: posX,
+                        y: posY,
+                        size: size
+                    });
+                }
+            }
+            
+            createFractalParticles();
+            
+            // Exibir frases de CTA persuasivas
+            function showCTAPhrase() {
+                if (gatewayModal.classList.contains('active')) return;
+                
+                const phrase = ctaPhrases[Math.floor(Math.random() * ctaPhrases.length)];
+                const phraseEl = document.createElement('div');
+                phraseEl.className = 'cta-phrase';
+                phraseEl.textContent = phrase;
+                
+                // Posição aleatória (não muito perto das bordas)
+                const x = Math.random() * (window.innerWidth - 400) + 200;
+                const y = Math.random() * (window.innerHeight - 100) + 50;
+                
+                phraseEl.style.left = `${x}px`;
+                phraseEl.style.top = `${y}px`;
+                
+                ctaPhrasesContainer.appendChild(phraseEl);
+                
+                // Animação de aparecimento e desaparecimento
+                phraseEl.style.animation = `phrase-appear 6s ease-in-out forwards`;
+                
+                // Remover após animação
+                setTimeout(() => {
+                    if (phraseEl.parentNode) {
+                        ctaPhrasesContainer.removeChild(phraseEl);
+                    }
+                }, 6000);
+            }
+            
+            // Mostrar frases periodicamente
+            setInterval(showCTAPhrase, 2000);
+            // Start showing phrases immediately
+            setTimeout(showCTAPhrase, 1000);
+            
+            // Notificações de compra em tempo real
+            function showPurchaseNotification() {
+                const message = purchaseMessages[Math.floor(Math.random() * purchaseMessages.length)];
+                const notificationEl = document.createElement('div');
+                notificationEl.className = 'purchase-notification';
+                notificationEl.textContent = message;
+                
+                purchaseNotifications.appendChild(notificationEl);
+                
+                // Decrease stock when purchase notification appears
+                if (currentStock > 0) {
+                    const decrease = Math.floor(Math.random() * 3) + 1; // Remove 1-3 units
+                    currentStock -= decrease;
+                    if (currentStock < 0) currentStock = 0;
+                    updateStock();
+                    
+                    // Fluctuate price on purchase
+                    fluctuatePrice();
+                }
+                
+                // Animação de entrada
+                setTimeout(() => {
+                    notificationEl.style.opacity = '1';
+                    notificationEl.style.transform = 'translateY(0)';
+                }, 100);
+                
+                // Animação de saída após 5 segundos
+                setTimeout(() => {
+                    notificationEl.style.opacity = '0';
+                    notificationEl.style.transform = 'translateY(100px)';
+                    
+                    // Remover após animação
+                    setTimeout(() => {
+                        if (notificationEl.parentNode) {
+                            purchaseNotifications.removeChild(notificationEl);
+                        }
+                    }, 1000);
+                }, 5000);
+            }
+            
+            // Mostrar notificações periodicamente
+            setInterval(showPurchaseNotification, 6000);
+            // Show first notification quickly
+            setTimeout(showPurchaseNotification, 4000);
+            
+            // Efeito fantástico de derretimento líquido
+            function liquidMeltEffect() {
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+                
+                // Melt all CTA phrases with liquid effect
+                const phrases = document.querySelectorAll('.cta-phrase');
+                phrases.forEach((phrase, index) => {
+                    setTimeout(() => {
+                        phrase.classList.add('melting');
+                    }, index * 50);
+                });
+                
+                // Create ripple effect
+                const ripple = document.createElement('div');
+                ripple.style.position = 'fixed';
+                ripple.style.left = `${centerX}px`;
+                ripple.style.top = `${centerY}px`;
+                ripple.style.width = '0';
+                ripple.style.height = '0';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'radial-gradient(circle, var(--gold-glow), transparent)';
+                ripple.style.transform = 'translate(-50%, -50%)';
+                ripple.style.transition = 'all 2s ease';
+                ripple.style.pointerEvents = 'none';
+                ripple.style.zIndex = '999';
+                document.body.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.style.width = '200vw';
+                    ripple.style.height = '200vw';
+                    ripple.style.opacity = '0';
+                }, 100);
+                
+                // Liquid morph particles with spiral pattern
+                particles.forEach((particle, index) => {
+                    const element = particle.element;
+                    
+                    // Calculate start position
+                    const startX = (particle.x / 100) * window.innerWidth;
+                    const startY = (particle.y / 100) * window.innerHeight;
+                    
+                    // Calculate spiral path to center
+                    const angle = (index / particles.length) * Math.PI * 2;
+                    const spiralRadius = 200;
+                    
+                    const midX1 = centerX + Math.cos(angle) * spiralRadius;
+                    const midY1 = centerY + Math.sin(angle) * spiralRadius;
+                    
+                    const midX2 = centerX + Math.cos(angle + Math.PI/2) * (spiralRadius * 0.5);
+                    const midY2 = centerY + Math.sin(angle + Math.PI/2) * (spiralRadius * 0.5);
+                    
+                    const midX3 = centerX + Math.cos(angle + Math.PI) * (spiralRadius * 0.25);
+                    const midY3 = centerY + Math.sin(angle + Math.PI) * (spiralRadius * 0.25);
+                    
+                    // Set CSS variables for complex animation path
+                    element.style.setProperty('--startX', `${startX}px`);
+                    element.style.setProperty('--startY', `${startY}px`);
+                    element.style.setProperty('--midX1', `${midX1}px`);
+                    element.style.setProperty('--midY1', `${midY1}px`);
+                    element.style.setProperty('--midX2', `${midX2}px`);
+                    element.style.setProperty('--midY2', `${midY2}px`);
+                    element.style.setProperty('--midX3', `${midX3}px`);
+                    element.style.setProperty('--midY3', `${midY3}px`);
+                    element.style.setProperty('--endX', `${centerX}px`);
+                    element.style.setProperty('--endY', `${centerY}px`);
+                    
+                    // Add melting class and animate
+                    element.classList.add('melting');
+                    element.style.animation = `liquidMorph 2.5s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.003}s forwards`;
+                    
+                    // Make particles look liquid with gradient
+                    element.style.background = `radial-gradient(circle, var(--gold), var(--neon), var(--purple))`;
+                    element.style.boxShadow = `0 0 20px currentColor, 0 0 40px currentColor`;
+                });
+                
+                // Show success indicator
+                setTimeout(() => {
+                    const successEl = document.createElement('div');
+                    successEl.className = 'success-indicator';
+                    successEl.textContent = '✨ Gateway Loading... ✨';
+                    successIndicators.appendChild(successEl);
+                    
+                    setTimeout(() => {
+                        if (successEl.parentNode) {
+                            successIndicators.removeChild(successEl);
+                        }
+                    }, 3000);
+                }, 1000);
+                
+                // Show modal after liquid effect completes
+                setTimeout(() => {
+                    gatewayModal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    
+                    // Remove ripple
+                    if (ripple.parentNode) {
+                        document.body.removeChild(ripple);
+                    }
+                    
+                    // Animate gateway entries with stagger
+                    const gateways = document.querySelectorAll('.gateway');
+                    gateways.forEach((gateway, index) => {
+                        gateway.style.animation = `gateway-appear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) ${index * 0.1 + 0.3}s both`;
+                    });
+                }, 2500);
+            }
+            
+            // CTA button click with liquid melt effect
+            ctaBtn.addEventListener('click', function() {
+                // Add haptic feedback simulation
+                if (navigator.vibrate) {
+                    navigator.vibrate([50, 30, 100]);
+                }
+                
+                liquidMeltEffect();
+            });
+            
+            // Close modal
+            modalOverlay.addEventListener('click', closeModal);
+            modalClose.addEventListener('click', closeModal);
+            
+            function closeModal() {
+                gatewayModal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+                
+                // Recreate particles with explosion effect
+                const particleElements = fractalParticles.querySelectorAll('.fractal-particle');
+                particleElements.forEach((particle, index) => {
+                    particle.style.animation = `explodeOut 1s ease ${index * 0.002}s`;
+                });
+                
+                setTimeout(() => {
+                    fractalParticles.innerHTML = '';
+                    particles.length = 0;
+                    createFractalParticles();
+                }, 1000);
+            }
+            
+            // Configure gateways
+            const gateways = document.querySelectorAll('.gateway');
+            gateways.forEach(gateway => {
+                gateway.addEventListener('click', function() {
+                    const gatewayType = this.dataset.gateway;
+                    
+                    // Gateway URLs (replace with your actual links)
+                    const gatewayUrls = {
+                        hotmart: 'https://hotmart.com/',
+                        gumroad: 'https://gumroad.com/',
+                        jvzoo: 'https://jvzoo.com/',
+                        warriorplus: 'https://warriorplus.com/',
+                        payhip: 'https://payhip.com/'
+                    };
+                    
+                    // Show success animation
+                    const successEl = document.createElement('div');
+                    successEl.className = 'success-indicator';
+                    successEl.textContent = '🎉 Redirecting to checkout... 🎉';
+                    successIndicators.appendChild(successEl);
+                    
+                    // Redirect to selected gateway
+                    setTimeout(() => {
+                        window.open(gatewayUrls[gatewayType], '_blank');
+                    }, 500);
+                });
+            });
+            
+            // Configure help button
+            helpBtn.addEventListener('click', function() {
+                const email = 'neurich.global@gmail.com';
+                const subject = 'Support Request - THE NEURICH CODE';
+                const body = 'Hello Neurich Team, I need assistance with:';
+                
+                window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            });
+            
+            // Interactive 3D effects
+            const productImage = document.querySelector('.product-image');
+            
+            document.addEventListener('mousemove', function(e) {
+                const x = (window.innerWidth / 2 - e.clientX) / 25;
+                const y = (window.innerHeight / 2 - e.clientY) / 25;
+                
+                productImage.style.transform = `translateZ(30px) rotateY(${x}deg) rotateX(${y}deg)`;
+            });
+            
+            // Add explosion animation for particles
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes explodeOut {
+                    0% {
+                        transform: scale(1) translate(0, 0);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: scale(0) translate(
+                            ${Math.random() * 200 - 100}px,
+                            ${Math.random() * 200 - 100}px
+                        );
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
