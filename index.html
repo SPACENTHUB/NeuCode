@@ -1,487 +1,359 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>THE NEURICH CODE — Inevitable</title>
-<meta name="description" content="THE NEURICH CODE — Founder Launch $197. A living landing page that adapts to gestures, intent and attention.">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;600;800&display=swap" rel="stylesheet">
+<title>THE NEURICH CODE — The Inevitable Protocol</title>
+<meta name="description" content="THE NEURICH CODE — Founder Launch. A living, multisensory landing that speaks to every layer of the mind.">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;600;800&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+<!-- model-viewer for 3D model (replace with your GLTF) -->
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 <style>
 :root{
-  --bg:#000;
-  --fg:#eef2f7;
+  --bg:#030409;
+  --fg:#e9f8f7;
   --gold:#d4af37;
   --silver:#bfc7d6;
   --neon:#00fff0;
-  --muted:#95a0b3;
+  --muted:#9aa6b2;
   --glass: rgba(255,255,255,0.03);
+  --accent:#ffd37a;
 }
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;overflow:hidden;-webkit-font-smoothing:antialiased}
-#stage{position:fixed;inset:0;z-index:0;pointer-events:none}
-.container{position:relative;z-index:10;max-width:1100px;margin:0 auto;padding:40px;min-height:100vh;display:flex;align-items:center;justify-content:center}
-.shell{width:100%;max-width:1080px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));border-radius:20px;padding:28px;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.04);display:grid;grid-template-columns:1fr 460px;gap:28px;align-items:center}
-@media(max-width:980px){ .shell{grid-template-columns:1fr; padding:18px} .right{order:2} .left{order:1} }
-.left{padding:6px}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;overflow:hidden}
+#canvasBG{position:fixed;inset:0;z-index:0;pointer-events:none}
+.container{position:relative;z-index:20;max-width:1180px;margin:0 auto;padding:36px;min-height:100vh;display:grid;grid-template-columns:1fr 520px;gap:28px;align-items:center}
+@media(max-width:980px){ .container{grid-template-columns:1fr; padding:18px} .right{order:2} .left{order:1} }
 .kicker{font-family:'Playfair Display',serif;color:var(--gold);font-weight:900;font-size:12px;letter-spacing:1px}
-.title{font-family:'Playfair Display',serif;font-size:46px;line-height:1;margin:8px 0 8px;transition:transform .12s}
-.lead{color:var(--muted);font-size:16px;max-width:56ch;margin-bottom:14px}
-.hint{font-size:13px;color:var(--silver);margin-top:10px}
+.title{font-family:'Playfair Display',serif;font-size:48px;line-height:1;margin:8px 0;color:var(--fg);text-shadow:0 8px 40px rgba(0,0,0,0.8)}
+.subtitle{font-family:Orbitron,monospace;font-size:11px;color:var(--neon);letter-spacing:2px;margin-bottom:8px}
+.lead{color:var(--muted);font-size:16px;max-width:58ch;margin-bottom:12px}
 .controls{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
-.btn{background:linear-gradient(120deg,var(--gold),var(--neon));color:#041217;font-weight:900;padding:12px 20px;border-radius:12px;border:none;cursor:pointer;letter-spacing:.4px;box-shadow:0 12px 40px rgba(139,92,246,0.06);transition:transform .14s, box-shadow .18s}
-.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--fg);font-weight:700}
-.stats{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
-.stat{background:var(--glass);padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);font-weight:700;color:var(--silver);font-size:13px}
+.btn{background:linear-gradient(120deg,var(--gold),var(--neon));color:#041217;font-weight:900;padding:12px 18px;border-radius:12px;border:none;cursor:pointer;letter-spacing:.4px;box-shadow:0 18px 60px rgba(0,0,0,0.6);transition:transform .12s, filter .12s}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--fg);font-weight:800}
+.statRow{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.stat{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);font-weight:800;color:var(--muted);font-size:13px}
 
-/* RIGHT PANEL visual */
-.right{display:flex;flex-direction:column;align-items:center;gap:12px}
-.stageVisual{width:420px;height:480px;border-radius:18px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));border:1px solid rgba(255,255,255,0.06);display:grid;place-items:center;position:relative;overflow:visible}
-.mainWrap{position:relative;width:320px;height:360px;display:grid;place-items:center;pointer-events:none}
-.coverMain{width:220px;height:300px;border-radius:14px;border:2px solid rgba(212,175,55,0.08);box-shadow:0 60px 140px rgba(0,0,0,0.6);object-fit:cover}
-.orbit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none}
-.orbit .orb{position:absolute;width:120px;height:160px;border-radius:12px;overflow:hidden;opacity:.95}
-.orb.small{width:80px;height:110px;opacity:.92}
-.orb.left{left:-160px;top:-40px}
-.orb.right{right:-160px;bottom:-40px}
-.tornadoWrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-100px);width:420px;height:420px;pointer-events:none}
-.tornado{position:absolute;width:24px;height:24px;border-radius:50%;background:linear-gradient(180deg,var(--gold),var(--neon));box-shadow:0 10px 30px rgba(0,0,0,0.5);opacity:.95}
+/* RIGHT: immersive visual */
+.panel{width:520px;height:640px;border-radius:18px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.006));border:1px solid rgba(255,255,255,0.04);position:relative;overflow:visible}
+.visualStage{position:relative;width:100%;height:100%;display:grid;place-items:center;pointer-events:none}
+.modelWrap{position:relative;width:360px;height:480px;display:grid;place-items:center}
+model-viewer{width:360px;height:480px;border-radius:14px;box-shadow:0 60px 160px rgba(0,0,0,0.6)}
+/* secondary orbiters */
+.orbiter{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none}
+.orbImg{width:120px;height:160px;border-radius:12px;object-fit:cover;box-shadow:0 22px 80px rgba(0,0,0,0.7);border:2px solid rgba(212,175,55,0.06)}
+.orbSmall{width:86px;height:120px}
+.tornadoLayer{position:absolute;width:520px;height:520px;left:50%;top:50%;transform:translate(-50%,-60%);pointer-events:none}
 
-/* checkout gate floating buttons */
-.checkoutArea{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:12px;position:relative;height:58px}
-.gatewayBtn{position:absolute;padding:10px 14px;border-radius:12px;background:linear-gradient(90deg, rgba(212,175,55,0.12), rgba(0,255,240,0.04));border:1px solid rgba(212,175,55,0.12);color:var(--fg);font-weight:800;text-align:center;cursor:pointer;transform-origin:center;pointer-events:auto}
-.gatewayBtn.hidden{display:none}
+/* checkout area */
+.checkout{display:flex;flex-direction:column;align-items:center;gap:10px;position:absolute;left:50%;transform:translateX(-50%);bottom:18px;width:92%}
+.priceNow{font-size:40px;font-weight:900;color:var(--fg);min-width:120px;text-align:center;transition:transform .28s,color .18s}
+.priceOld{text-decoration:line-through;color:var(--muted);font-size:14px}
+.gatewayBtn{position:absolute;padding:12px 14px;border-radius:12px;background:linear-gradient(90deg, rgba(212,175,55,0.12), rgba(0,255,240,0.04));border:1px solid rgba(212,175,55,0.12);color:var(--fg);font-weight:800;text-align:center;cursor:pointer;pointer-events:auto;transform-origin:center;transition:transform .12s,opacity .18s}
+.gatewayBtn.hidden{opacity:0;pointer-events:none}
 
-/* price */
-.priceRow{display:flex;align-items:baseline;gap:12px;margin-top:8px}
-.priceNow{font-size:36px;font-weight:900;color:#e9fff9;min-width:96px;text-align:center;transition:transform .3s, color .18s}
-.priceOld{text-decoration:line-through;color:var(--muted);font-size:16px}
+/* notification ticker */
+.ticker{position:fixed;left:16px;top:16px;background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(255,255,255,0.02));padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);font-weight:800;color:var(--fg);z-index:400;box-shadow:0 30px 80px rgba(0,0,0,0.6)}
+.assigned{position:fixed;right:18px;top:18px;background:linear-gradient(180deg, rgba(212,175,55,0.08), rgba(0,255,240,0.02));padding:12px 16px;border-radius:12px;border:1px solid rgba(212,175,55,0.12);font-weight:900;color:var(--fg);z-index:410;opacity:0;transform:scale(.98);transition:all .22s}
 
-/* small notifications */
-.notification{position:fixed;left:20px;bottom:20px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:10px;color:var(--fg);font-weight:700;box-shadow:0 20px 60px rgba(0,0,0,0.6);opacity:0;transform:translateY(30px);transition:all .56s;z-index:300}
-.notification.show{opacity:1;transform:translateY(0)}
-
-/* micro messages overlay */
-.assignedMsg{position:fixed;right:28px;top:28px;background:linear-gradient(180deg, rgba(212,175,55,0.06), rgba(0,255,240,0.02));padding:12px 16px;border-radius:12px;border:1px solid rgba(212,175,55,0.12);font-weight:800;color:var(--fg);z-index:320;opacity:0;transform:scale(.98);transition:all .28s}
-.assignedMsg.show{opacity:1;transform:scale(1)}
-.cursor{position:fixed;left:0;top:0;width:16px;height:16px;border-radius:50%;pointer-events:none;z-index:400;mix-blend-mode:screen;background:radial-gradient(circle at 30% 30%, rgba(0,255,240,0.95), rgba(212,175,55,0.5));transform:translate(-50%,-50%) scale(.9)}
-
-/* accessibility and small tweaks */
-@media(max-width:520px){ .title{font-size:28px} .coverMain{width:160px;height:220px} .stageVisual{width:320px;height:360px} }
+/* audio hint */
+.sr-only{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+.cursor{position:fixed;left:0;top:0;width:18px;height:18px;border-radius:50%;pointer-events:none;z-index:500;mix-blend-mode:screen;background:radial-gradient(circle at 30% 30%, rgba(0,255,240,0.95), rgba(212,175,55,0.5));transform:translate(-50%,-50%) scale(.9)}
+/* Portuguese ritual line */
+.portuguese{font-family:Inter,system-ui; color:var(--accent); font-weight:900; margin-top:10px; font-size:13px}
 </style>
 </head>
 <body>
-  <!-- dynamic canvas background -->
-  <canvas id="bgCanvas" width="1920" height="1080" style="position:fixed;inset:0;z-index:0;"></canvas>
+<canvas id="canvasBG"></canvas>
 
-  <div class="container" role="main" aria-labelledby="titleText">
-    <div class="shell" id="shell">
-      <div class="left">
-        <div class="kicker">SpacentHubs · NeuRich</div>
-        <h1 id="titleText" class="title">THE NEURICH CODE</h1>
-        <p class="lead">O manual privado da riqueza assimétrica. Sistemas autocompostos de receita — elegantes, autônomos, sem fronteiras.</p>
-        <div class="hint" id="hint">Founder Launch • 14-Day Risk-Reversal • Lançamento fundador: <strong id="priceInline">$197</strong></div>
+<div class="container" role="main" aria-labelledby="title">
+  <div class="left">
+    <div class="kicker">SpacentHubs · NeuRich</div>
+    <div class="subtitle">ACCESS PROTOCOL — FOUNDER SEQUENCE</div>
+    <h1 id="title" class="title">THE NEURICH CODE</h1>
+    <p class="lead" id="lead">A living, multisensory protocol that converts attention into compounding asymmetric wealth. This is not a program — it is an initiation.</p>
+    <div class="controls">
+      <button id="claim" class="btn">CLAIM FOUNDER ACCESS — $197</button>
+      <button id="preview" class="btn ghost">PREVIEW MICRO-ASSETS</button>
+    </div>
+    <div class="statRow" aria-hidden="true">
+      <div class="stat">Avg Setup <strong style="display:block">27 min</strong></div>
+      <div class="stat">Recurring Models <strong style="display:block">12+</strong></div>
+      <div class="stat">Automation <strong style="display:block">90%+</strong></div>
+    </div>
+    <div class="portuguese">Você foi escolhido.</div>
+  </div>
 
-        <div class="controls" style="margin-top:18px">
-          <button id="claimBtn" class="btn">Acessar — Preço Founder</button>
-          <button id="demoBtn" class="btn ghost">Preview Micro-Assets</button>
-        </div>
+  <div class="right">
+    <div class="panel">
+      <div class="visualStage">
+        <div class="modelWrap" id="modelWrap">
+          <!-- 3D / 4D model (replace GLTF link) -->
+          <model-viewer id="gltf" src="LINK_MODEL_NEURICH.glb" alt="Neurich Codex" camera-controls auto-rotate exposure="1" shadow-intensity="1" camera-orbit="0deg 75deg 2.6m"></model-viewer>
 
-        <div class="stats">
-          <div class="stat">Avg Setup <strong style="display:block">27 min</strong></div>
-          <div class="stat">Recurring Models <strong style="display:block">12+</strong></div>
-          <div class="stat">Automation <strong style="display:block">90%+</strong></div>
-        </div>
-      </div>
-
-      <div class="right">
-        <div class="stageVisual" id="visual">
-          <div class="mainWrap" id="mainWrap">
-            <!-- orbiting secondary images -->
-            <div class="orbit" id="orbitLeft"><img id="imgLeft" class="orb small" src="LINK_IMAGE_2" alt="sec1"></div>
-            <img id="imgMain" class="coverMain" src="LINK_IMAGE_1" alt="THE NEURICH CODE cover">
-            <div class="orbit" id="orbitRight"><img id="imgRight" class="orb small" src="LINK_IMAGE_3" alt="sec2"></div>
-
-            <!-- tornado mini elements -->
-            <div class="tornadoWrap" id="tornadoWrap"></div>
+          <!-- left and right orbiting secondary images -->
+          <div class="orbiter" id="orbLeft" style="transform-origin: -160px -40px;">
+            <img class="orbImg orbSmall" id="imgL" src="LINK_IMAGE_2.jpg" alt="">
           </div>
+          <div class="orbiter" id="orbRight" style="transform-origin: 520px 420px;">
+            <img class="orbImg orbSmall" id="imgR" src="LINK_IMAGE_3.jpg" alt="">
+          </div>
+
+          <!-- tornado layer -->
+          <div class="tornadoLayer" id="tornadoLayer"></div>
         </div>
 
-        <div class="priceRow">
-          <div class="priceOld" id="priceOld">$1,997</div>
+        <div class="checkout" id="checkout">
+          <div class="priceOld" id="oldPrice">$1,997</div>
           <div class="priceNow" id="priceNow">$197</div>
+          <!-- gateways spawn and dodge -->
+          <div id="gwDirect" class="gatewayBtn hidden">NEURICH DIRECT</div>
+          <div id="gwWarrior" class="gatewayBtn hidden">WarriorPlus</div>
+          <div id="gwGum" class="gatewayBtn hidden">Gumroad</div>
         </div>
-
-        <div class="checkoutArea" id="checkoutArea">
-          <!-- gateway buttons appear only after claim click -->
-          <div id="gw1" class="gatewayBtn hidden">WarriorPlus</div>
-          <div id="gw2" class="gatewayBtn hidden">Hotmart</div>
-          <div id="gw3" class="gatewayBtn hidden">Gumroad</div>
-        </div>
-
-        <div style="width:100%;display:flex;gap:8px;justify-content:center;margin-top:8px">
-          <button id="miniBuy" class="btn">Buy — Founder</button>
-          <button id="openGate" class="btn ghost">Choose Gateway</button>
-        </div>
-        <div class="hint" style="margin-top:8px">One-time purchase • Lifetime updates • Global payouts</div>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="notification" id="notif">alguém comprou — São Paulo, BR</div>
-  <div class="assignedMsg" id="assignedMsg">Você foi escolhido — Bem-vindo ao Protocolo</div>
-  <div class="cursor" id="cursor" aria-hidden="true"></div>
+<div class="ticker" id="ticker">— live: 0 purchases worldwide</div>
+<div class="assigned" id="assigned">YOU ARE CHOSEN — ACCESS READY</div>
+<div class="cursor" id="cursor"></div>
+
+<!-- Spatial audio (binaural ambient loop) -->
+<audio id="ambient" loop crossorigin="anonymous" src="LINK_AMBIENT_BINAURAL.mp3"></audio>
+<!-- Optional pulse audio for purchase -->
+<audio id="pulseSfx" src="LINK_PULSE_SFX.mp3"></audio>
+<div class="sr-only" aria-hidden="true">Replace audio links with your files for binaural/hypnotic effect.</div>
 
 <script>
-/* ========= GLOBAL STATE ========= */
-const state = {
-  engagement: 0,
-  price: 197,
-  purchases: 0,
-  gatewaysShown: false,
-  lastNotifTime: 0
-};
+/* ====== State ====== */
+const state = { engagement:0, price:197, purchases:0, gateways:false, lastPurchase:0 };
 
-/* ========= UTILITIES ========= */
-const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
-const rand = (a,b)=>a + Math.random()*(b-a);
-const pick = (arr)=>arr[Math.floor(Math.random()*arr.length)];
-
-/* ========= DOM ========= */
-const cursor = document.getElementById('cursor');
-const claimBtn = document.getElementById('claimBtn');
-const openGate = document.getElementById('openGate');
-const miniBuy = document.getElementById('miniBuy');
+/* ====== DOM ====== */
+const canvas = document.getElementById('canvasBG');
+const ctx = canvas.getContext('2d');
+const claim = document.getElementById('claim');
+const preview = document.getElementById('preview');
 const priceNow = document.getElementById('priceNow');
-const priceInline = document.getElementById('priceInline');
-const gw1 = document.getElementById('gw1');
-const gw2 = document.getElementById('gw2');
-const gw3 = document.getElementById('gw3');
-const checkoutArea = document.getElementById('checkoutArea');
-const notif = document.getElementById('notif');
-const assignedMsg = document.getElementById('assignedMsg');
-const title = document.getElementById('titleText');
-const bgCanvas = document.getElementById('bgCanvas');
-const ctx = bgCanvas.getContext('2d');
+const ticker = document.getElementById('ticker');
+const assigned = document.getElementById('assigned');
+const cursor = document.getElementById('cursor');
+const gw = [document.getElementById('gwDirect'), document.getElementById('gwWarrior'), document.getElementById('gwGum')];
+const ambient = document.getElementById('ambient');
+const pulseSfx = document.getElementById('pulseSfx');
+const orbLeft = document.getElementById('orbLeft');
+const orbRight = document.getElementById('orbRight');
+const tornadoLayer = document.getElementById('tornadoLayer');
+const modelViewer = document.getElementById('gltf');
 
-/* ========= BACKGROUND: LIQUID CRYSTAL WAVES ========= */
-let W = bgCanvas.width = window.innerWidth;
-let H = bgCanvas.height = window.innerHeight;
-window.addEventListener('resize', ()=>{ W = bgCanvas.width = window.innerWidth; H = bgCanvas.height = window.innerHeight; });
+/* ====== Canvas background - liquid crystalline waves + shimmer (4D illusion) ====== */
+let W = canvas.width = window.innerWidth;
+let H = canvas.height = window.innerHeight;
+window.addEventListener('resize', ()=>{ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; });
 
-let wavePhase = 0;
-let palette = [
-  {a:'#1a1a1a', b:'#101010', mix:'#0b0b0b'},
-  {a:'#2b1b00', b:'#bfae6b', mix:'#6b4f23'},
-  {a:'#002b2b', b:'#79fff4', mix:'#1a9e99'},
-  {a:'#0a0a1b', b:'#bfb9ff', mix:'#585297'}
-];
-
-let baseTone = {gold: 212, silver: 175, neon: 240}; // used to nudge color shifts
-
-function drawBG(){
+let t = 0;
+function draw(){
+  t += 0.01 + state.engagement*0.00008;
   ctx.clearRect(0,0,W,H);
-  // layered waves
-  wavePhase += 0.003 + state.engagement * 0.00012;
-  for(let layer=0;layer<5;layer++){
-    const t = wavePhase*(1 + layer*0.22);
-    const amp = 30 + layer*18 + Math.sin(t*0.7)*10;
-    const freq = 0.0025 + layer*0.0012;
-    const hueShift = (Math.sin(t*0.8 + layer)*30 + layer*18);
-    const grd = ctx.createLinearGradient(0,0,W,H);
-    // dynamic color mixing influenced by engagement & purchases
-    const brightness = clamp(0.15 + state.engagement/1200 + state.purchases*0.02, 0.12, 0.9);
-    const c1 = tinyColorMix('#d4af37', '#00fff0', clamp(state.engagement/800, 0,1), brightness);
-    const c2 = tinyColorMix('#bfc7d6', '#041217', clamp(state.purchases/40, 0,1), brightness);
+
+  // layered shifting gradients to simulate crystalline liquid
+  for(let i=0;i<5;i++){
+    const phase = t*(1 + i*0.2);
+    const amp = 60 + i*18;
+    const grd = ctx.createLinearGradient(0, Math.sin(phase)*200, W, H - Math.cos(phase)*120);
+    const c1 = mixColor('#0b0b0f','#d4af37', clamp(state.engagement/800,0,1));
+    const c2 = mixColor('#041217','#00fff0', clamp(state.purchases/40,0,1));
     grd.addColorStop(0, c1);
     grd.addColorStop(1, c2);
+    ctx.globalAlpha = 0.06 + i*0.03;
     ctx.fillStyle = grd;
-    ctx.globalAlpha = 0.12 + layer*0.06;
     ctx.beginPath();
-    const steps = 160;
-    for(let i=0;i<=steps;i++){
-      const x = (i/steps) * W;
-      const y = H*0.5 + Math.sin((i*freq*W) + t + layer*1.5) * (amp + Math.sin(t*0.5+i*0.01)*(amp*0.6));
-      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    ctx.moveTo(0, H/2 + Math.sin(phase)*amp);
+    for(let x=0;x<=W;x+=24){
+      const y = H/2 + Math.sin((x*0.006) + phase + i)* (amp + Math.sin(x*0.01 + phase*0.4)*22);
+      ctx.lineTo(x,y);
     }
     ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath();
     ctx.fill();
   }
-  // subtle shining crystals
-  ctx.globalAlpha = 0.06 + (state.engagement/1800);
-  for(let s=0;s<20;s++){
+
+  // sparkling crystals
+  ctx.globalAlpha = 0.08 + state.engagement/2000;
+  for(let i=0;i<22;i++){
+    const x = (i*137 + t*40) % W;
+    const y = H*0.2 + Math.sin(i + t*0.9)*H*0.12;
     ctx.beginPath();
-    const x = (s*97 + wavePhase*220) % W;
-    const y = (H*0.2 + Math.sin(s*0.9 + wavePhase*2)*(H*0.12));
-    ctx.ellipse(x,y, 120, 30, wavePhase + s, 0, Math.PI*2);
+    ctx.ellipse(x,y, 120, 22, t + i, 0, Math.PI*2);
     ctx.fill();
   }
-  requestAnimationFrame(drawBG);
+  requestAnimationFrame(draw);
 }
-
-// tiny color mixer returning rgba
-function tinyColorMix(hexA, hexB, t, brightness){
-  // parse
-  const a = hexToRgb(hexA), b = hexToRgb(hexB);
-  const r = Math.round((a.r*(1-t) + b.r*t) * (0.9 + brightness*0.2));
-  const g = Math.round((a.g*(1-t) + b.g*t) * (0.9 + brightness*0.2));
-  const bl = Math.round((a.b*(1-t) + b.b*t) * (0.9 + brightness*0.2));
+function mixColor(a,b,f){
+  const A = hexToRgb(a), B = hexToRgb(b);
+  const r = Math.round(A.r*(1-f) + B.r*f);
+  const g = Math.round(A.g*(1-f) + B.g*f);
+  const bl = Math.round(A.b*(1-f) + B.b*f);
   return `rgb(${r},${g},${bl})`;
 }
-function hexToRgb(h){
-  const hh = h.replace('#','');
-  return {r:parseInt(hh.substring(0,2),16), g:parseInt(hh.substring(2,4),16), b:parseInt(hh.substring(4,6),16)}
-}
-drawBG();
+function hexToRgb(h){ const hh=h.replace('#',''); return {r:parseInt(hh.substring(0,2),16), g:parseInt(hh.substring(2,4),16), b:parseInt(hh.substring(4,6),16)} }
+draw();
 
-/* ========= ORBIT & TORNADO MOTIONS ========= */
-const imgMain = document.getElementById('imgMain');
-const imgLeft = document.getElementById('imgLeft');
-const imgRight = document.getElementById('imgRight');
-const orbitLeft = document.getElementById('orbitLeft');
-const orbitRight = document.getElementById('orbitRight');
-const tornadoWrap = document.getElementById('tornadoWrap');
-
-let orbitAngle = 0;
-function animateOrbits(){
-  orbitAngle += 0.012 + Math.min(state.engagement/8000, 0.03);
-  // compute positions around main
-  const cx = mainWrapCenterX(), cy = mainWrapCenterY();
-  const rX = 180 + Math.sin(orbitAngle*1.3)*12;
-  const rY = 110 + Math.cos(orbitAngle*0.9)*9;
-  const lx = cx + Math.cos(orbitAngle) * -rX;
-  const ly = cy + Math.sin(orbitAngle) * -rY;
-  const rx = cx + Math.cos(orbitAngle + Math.PI) * rX;
-  const ry = cy + Math.sin(orbitAngle + Math.PI) * rY;
-  orbitLeft.style.transform = `translate(${lx - cx}px, ${ly - cy}px) rotate(${orbitAngle}rad)`;
-  orbitRight.style.transform = `translate(${rx - cx}px, ${ry - cy}px) rotate(${orbitAngle*-1}rad)`;
-  // subtle scale/pulse
-  imgLeft.style.transform = `scale(${0.9 + 0.07*Math.sin(orbitAngle*2)})`;
-  imgRight.style.transform = `scale(${0.9 + 0.07*Math.cos(orbitAngle*2)})`;
-  // tornado motion - two points swirling emphasizing center
-  tornadoWrap.innerHTML = ''; // regenerate each frame for organic motion
-  for(let i=0;i<18;i++){
-    const t = orbitAngle*1.9 + i*0.18;
-    const tx = cx + Math.cos(t)* (40 + i*6) * (i%2?1.12:0.86);
-    const ty = cy + Math.sin(t)* (8 + i*10) * (0.6 + i*0.03);
-    const el = document.createElement('div');
-    el.className = 'tornado';
-    el.style.left = (tx - cx + 160) + 'px';
-    el.style.top = (ty - cy + 120) + 'px';
-    el.style.opacity = `${0.25 + (i/18)*0.8}`;
-    el.style.transform = `scale(${0.25 + i/18})`;
-    el.style.filter = `hue-rotate(${(i*12 + state.engagement/3)%360}deg)`;
-    tornadoWrap.appendChild(el);
+/* ====== Orbital motion (secondary images orbit the main 3D) ====== */
+let angle = 0;
+function orbit(){
+  angle += 0.014 + state.engagement*0.0001;
+  const rX = 220 + Math.sin(angle*1.3)*10;
+  const rY = 120 + Math.cos(angle*0.9)*8;
+  const cx = window.innerWidth*0.72; // approx center of right panel
+  const cy = window.innerHeight*0.45;
+  const lx = cx + Math.cos(angle) * -rX, ly = cy + Math.sin(angle) * -rY;
+  const rx = cx + Math.cos(angle + Math.PI) * rX, ry = cy + Math.sin(angle + Math.PI) * rY;
+  orbLeft.style.transform = `translate(${lx - cx}px, ${ly - cy}px) rotate(${angle}rad)`;
+  orbRight.style.transform = `translate(${rx - cx}px, ${ry - cy}px) rotate(${-angle}rad)`;
+  // tornado micro-particles
+  tornadoLayer.innerHTML = '';
+  for(let i=0;i<20;i++){
+    const theta = angle*2 + i*0.28;
+    const px = cx + Math.cos(theta) * (20 + i*8);
+    const py = cy + Math.sin(theta) * (6 + i*6);
+    const dot = document.createElement('div');
+    dot.style.position='absolute'; dot.style.width = `${6 + i*1.8}px`; dot.style.height = `${6 + i*1.8}px`;
+    dot.style.left = (px - cx + 260) + 'px'; dot.style.top = (py - cy + 120) + 'px';
+    dot.style.borderRadius='50%'; dot.style.opacity = `${0.12 + i/20}`; dot.style.pointerEvents='none';
+    dot.style.filter = `hue-rotate(${(i*12 + state.engagement/3) % 360}deg)`;
+    dot.style.background = i%2? 'rgba(212,175,55,0.95)' : 'rgba(0,255,240,0.98)';
+    dot.style.boxShadow = '0 10px 30px rgba(0,0,0,0.6)';
+    tornadoLayer.appendChild(dot);
   }
-  requestAnimationFrame(animateOrbits);
+  requestAnimationFrame(orbit);
 }
-function mainWrapCenterX(){ const rect = document.getElementById('mainWrap').getBoundingClientRect(); return rect.left + rect.width/2; }
-function mainWrapCenterY(){ const rect = document.getElementById('mainWrap').getBoundingClientRect(); return rect.top + rect.height/2; }
-requestAnimationFrame(animateOrbits);
+orbit();
 
-/* ========= GATEWAYS — hidden until claim click. when shown they move trying to avoid clicks ========= */
-const gatewayButtons = [gw1, gw2, gw3];
+/* ====== Gateways: hidden until claim; when shown they dodge away gracefully ====== */
 function showGateways(){
-  if(state.gatewaysShown) return;
-  state.gatewaysShown = true;
-  // place them initially centered but hidden, then animate out
-  gatewayButtons.forEach((b,i)=>{
+  if(state.gateways) return; state.gateways = true;
+  gw.forEach((b,i)=>{
     b.classList.remove('hidden');
-    b.style.left = (checkoutArea.getBoundingClientRect().left + checkoutArea.offsetWidth/2 - 60) + 'px';
-    b.style.top = (checkoutArea.getBoundingClientRect().top + 6) + 'px';
-    // assign motion params
-    b._dir = i%2?1:-1; // alternate direction
-    b._speed = 0.9 + i*0.22;
-    b._offset = i*40;
+    b.style.opacity = 1;
+    b.style.left = (window.innerWidth*0.5 + (i-1)*60) + 'px';
+    b.style.top = (window.innerHeight*0.86) + 'px';
+    b._i = i;
   });
   animateGateways();
 }
 function animateGateways(){
-  gatewayButtons.forEach((b,i)=>{
-    // compute a floating orbit inside checkoutArea trying to "escape"
-    const area = checkoutArea.getBoundingClientRect();
-    const t = Date.now()/1000 * (0.8 + i*0.14) + i;
-    const escape = Math.min(1, 0.02 + state.engagement/300);
-    const wobbleX = Math.cos(t * (1 + i*0.2)) * (80 + i*30) * (1 + escape*4) * b._dir;
-    const wobbleY = Math.sin(t * (1.3 + i*0.2)) * (12 + i*6) * (1 + escape*1.2);
-    const centerX = area.left + area.width/2;
-    const centerY = area.top + area.height/2;
-    // set style anchored relative to checkoutArea container
-    b.style.transform = `translate(${centerX - area.left - b.offsetWidth/2 + wobbleX}px, ${centerY - area.top - b.offsetHeight/2 + wobbleY}px) rotate(${Math.sin(t+i)*10}deg)`;
-    // avoid pointer - shift pointer-events when moving fast
-    b.style.pointerEvents = escape > 0.8 ? 'none' : 'auto';
+  gw.forEach((b, idx)=>{
+    const t = Date.now()/1000 * (0.9 + idx*0.2);
+    const escape = Math.min(1, 0.035 + state.engagement/300);
+    const wobX = Math.cos(t * (1 + idx*0.3)) * (120 + idx*40) * (1 + escape*3) * (idx%2?1:-1);
+    const wobY = Math.sin(t * (1.4 + idx*0.2)) * (18 + idx*8) * (1 + escape*1.1);
+    // anchored around checkout area
+    const baseX = window.innerWidth*0.5 - 100 + idx*120;
+    const baseY = window.innerHeight*0.82;
+    b.style.transform = `translate(${wobX}px, ${wobY}px) rotate(${Math.sin(t)*8}deg)`;
+    // pointer avoidance: if mouse near, intensify escape
+    requestAnimationFrame(()=> {});
   });
-  requestAnimationFrame(animateGateways);
+  // loop
+  setTimeout(animateGateways, 60);
 }
 
-/* when user tries to click a gateway, it dodges more */
-gatewayButtons.forEach(b=>{
-  b.addEventListener('mouseenter', ()=>{ state.engagement += 14; bumpEngagement(0); /* increases dodge intensity */ });
+/* gateway dodge on hover */
+gw.forEach(b=>{
+  b.addEventListener('mouseenter', ()=>{ state.engagement += 18; bump(0); });
 });
 
-/* ========= PURCHASE / PRICE OSCILLATION ENGINE ========= */
-function bumpEngagement(v=6){
-  state.engagement = clamp(state.engagement + v, 0, 9999);
-  // show assigned message for higher engagement
-  if(state.engagement > 60){
-    assignedMsg.classList.add('show');
-    setTimeout(()=>assignedMsg.classList.remove('show'), 2600);
-  }
-  // change bg tone briefly
-  baseTone.gold = (baseTone.gold + Math.floor(v*6)) % 255;
-}
-
-function simulatePurchase(source){
-  state.purchases++;
-  // price reaction: emulate crypto-like behavior: sometimes rises, sometimes dips, sometimes "explodes"
-  const r = Math.random();
-  if(r < 0.45){
-    state.price = Math.round(state.price * (1 + (0.02 + Math.random()*0.18))); // rises
-  } else if(r < 0.78){
-    state.price = Math.max(27, Math.round(state.price * (1 - (0.02 + Math.random()*0.28)))); // dips
-  } else {
-    state.price = Math.round(state.price * (1 + (0.35 + Math.random()*1.2))); // explosion
-  }
-  // dampen extremes
-  if(state.price < 27) state.price = 27;
-  if(state.price > 99997) state.price = 99997;
-  updatePriceDisplay(true);
-  showPurchaseNotification(source);
-}
-
-/* update price UI with animation */
-function updatePriceDisplay(animate=false){
+/* ====== Price engine mimicking crypto hype ====== */
+function updatePrice(animate=true){
   priceNow.textContent = `$${state.price}`;
-  priceInline.textContent = `$${state.price}`;
   if(animate){
-    priceNow.style.transform = `scale(${1.08})`;
-    setTimeout(()=>priceNow.style.transform = 'scale(1)', 420);
-    priceNow.style.color = Math.random()>0.5 ? '#fff' : '#ffd37a';
+    priceNow.style.transform = 'scale(1.08)';
+    setTimeout(()=>priceNow.style.transform = 'scale(1)', 380);
   }
 }
-
-/* show ephemeral purchase notification (people around the world) */
-const worldLocales = [
-  'São Paulo, BR','Lisboa, PT','New York, USA','Lagos, NG','Dubai, AE','Mumbai, IN','Seoul, KR','Sydney, AU','Toronto, CA','Mexico City, MX'
-];
-function showPurchaseNotification(source){
-  const loc = pick(worldLocales);
-  const names = ['Matheus','Lina','J. Silva','A. Khan','Nina','Olivia','H. Park','Diego','Zara','Abdul'];
-  notif.textContent = `${pick(names)} comprou — ${loc} • ${source||'Founder'}`;
-  notif.classList.add('show');
-  setTimeout(()=>notif.classList.remove('show'), 3800);
-  state.lastNotifTime = Date.now();
-  // also flash background tone
-  bumpEngagement(12);
+function simulateBuy(source='DIRECT'){
+  state.purchases++;
+  // price volatility
+  const r = Math.random();
+  if(r < 0.45) state.price = Math.round(state.price * (1 + (0.02 + Math.random()*0.18)));
+  else if(r < 0.78) state.price = Math.max(27, Math.round(state.price * (1 - (0.02 + Math.random()*0.28))));
+  else state.price = Math.round(state.price * (1 + (0.35 + Math.random()*1.2)));
+  state.price = Math.max(27, Math.min(state.price, 99997));
+  updatePrice();
+  showTicker(`${pick(['Matheus','Lina','Noah','Aisha','Diego'])} bought — ${pick(['Lisbon','São Paulo','New York','Lagos','Dubai'])} • ${source}`);
+  // audio + haptic
+  try { pulseSfx.currentTime = 0; pulseSfx.play(); } catch(e){}
+  if(navigator.vibrate) navigator.vibrate(80);
+  bump(18);
 }
 
-/* clicking miniBuy triggers a purchase simulation (but real link should be used in actual gateway) */
-miniBuy.addEventListener('click', (e)=>{
-  bumpEngagement(22);
-  simulatePurchase('MiniBuy');
-  // micro burst around main image
-  microPulse();
-});
-
-/* clicking claim reveals gateways */
-claimBtn.addEventListener('click', ()=>{
-  bumpEngagement(18);
+/* ====== UI handlers ====== */
+claim.addEventListener('click', ()=>{
+  // subtle ritual: change copy, play ambient, reveal gateways
+  assigned.style.opacity = 1; assigned.style.transform = 'scale(1)';
+  assigned.textContent = 'YOU ARE CHOSEN — PROCEED';
+  try{ ambient.volume = 0.7; ambient.play(); }catch(e){}
   showGateways();
-  assignedMsg.textContent = 'Você foi escolhido — Acesso inicial concedido';
-  assignedMsg.classList.add('show');
-  setTimeout(()=>assignedMsg.classList.remove('show'), 2400);
+  setTimeout(()=>assigned.style.opacity = 0, 2400);
+});
+preview.addEventListener('click', ()=>{
+  bump(12);
+  // quick model spin & highlight
+  try{ modelViewer.play(); }catch(e){}
 });
 
-/* openGate does same */
-openGate.addEventListener('click', (e)=>{ e.preventDefault(); claimBtn.click(); });
+/* mini buy simulation */
+document.getElementById('gwDirect').addEventListener('click', ()=> simulateBuy('NEURICH DIRECT'));
+document.getElementById('gwWarrior').addEventListener('click', ()=> simulateBuy('WarriorPlus'));
+document.getElementById('gwGum').addEventListener('click', ()=> simulateBuy('Gumroad'));
 
-/* micro pulse effect */
-function microPulse(){
-  const n = 10 + Math.floor(Math.random()*20);
-  for(let i=0;i<n;i++){
-    const p = document.createElement('div');
-    p.style.position='fixed';
-    const rect = document.getElementById('mainWrap').getBoundingClientRect();
-    p.style.left = (rect.left + rect.width/2 + (Math.random()-0.5)*120) + 'px';
-    p.style.top = (rect.top + rect.height/2 + (Math.random()-0.5)*120) + 'px';
-    p.style.width = p.style.height = Math.round(rand(6,26)) + 'px';
-    p.style.borderRadius='50%';
-    p.style.background = Math.random()>0.5 ? 'rgba(212,175,55,0.98)' : 'rgba(0,255,240,0.96)';
-    p.style.zIndex = 500;
-    p.style.pointerEvents='none';
-    document.body.appendChild(p);
-    const dx = rand(-220,220), dy = rand(-220,220);
-    p.animate([{transform:'translate(0,0) scale(1)', opacity:1},{transform:`translate(${dx}px,${dy}px) scale(.1)`, opacity:0}],{duration:900 + Math.random()*800, easing:'cubic-bezier(.2,.9,.2,1)'});
-    setTimeout(()=>p.remove(), 1800);
-  }
+/* ====== Ticker & social proof ====== */
+function showTicker(text){
+  ticker.textContent = `— live: ${state.purchases} purchases worldwide • ${text}`;
+  ticker.animate([{transform:'translateY(8px)',opacity:.6},{transform:'translateY(0)',opacity:1}],{duration:380, easing:'cubic-bezier(.2,.9,.2,1)'});
 }
 
-/* ========= NOTIFICATIONS AUTO SIMULATOR (to make page feel globally bought) ========= */
+/* Auto simulation to build social proof once gateways shown */
 setInterval(()=>{
-  // occasionally simulate random purchases (only if gateways have been shown)
-  if(state.gatewaysShown && Math.random() < 0.46){
-    simulatePurchase(pick(['WarriorPlus','Hotmart','Gumroad','Direct']));
-  } else if(Math.random() < 0.08){
-    // random ambient notifications before gateway shown (teasing)
-    notif.textContent = `${pick(['Luca','Aisha','Noah','Marta'])} está vendo — ${pick(worldLocales)}`;
-    notif.classList.add('show');
-    setTimeout(()=>notif.classList.remove('show'), 2400);
+  if(state.gateways && Math.random() < 0.44){
+    simulateBuy(pick(['WarriorPlus','Direct','Gumroad']));
+  } else if(Math.random() < 0.06){
+    showTicker(`${pick(['Luca','Aisha','Noah'])} is viewing — ${pick(['Lisbon','Mumbai','Seoul'])}`);
   }
 }, 3800 + Math.random()*4200);
 
-/* ========= CURSOR & ENGAGEMENT ========= */
-let cx = window.innerWidth/2, cy = window.innerHeight/2;
+/* ====== Engagement & microcopy triggers ====== */
+let engDecay = setInterval(()=>{ state.engagement = Math.max(0, state.engagement - 0.6); }, 700);
+function bump(v=6){ state.engagement = Math.min(9999, state.engagement + v); }
+
+/* cursor + title micro-tilt */
 document.addEventListener('mousemove', (e)=>{
-  cx = e.clientX; cy = e.clientY;
-  cursor.style.left = cx + 'px'; cursor.style.top = cy + 'px';
-  cursor.style.transform = 'translate(-50%,-50%) scale(1.08)';
-  bumpEngagement(0.6);
-  // subtle title tilt
+  cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+  bump(0.6);
   const rx = (e.clientX/window.innerWidth - .5) * 8;
   const ry = (e.clientY/window.innerHeight - .5) * -8;
-  title.style.transform = `rotateX(${ry}deg) rotateY(${rx}deg)`;
+  document.getElementById('title').style.transform = `rotateX(${ry}deg) rotateY(${rx}deg)`;
 });
-document.addEventListener('mouseleave', ()=>{ cursor.style.transform='translate(-50%,-50%) scale(.9)'; });
 
-/* ========= EXTRA: when purchases high -> price volatility increases and "hype" pulses ========= */
-setInterval(()=>{
-  // natural small oscillation
-  const v = (Math.random()-0.5) * (1 + state.purchases*0.06);
-  state.price = Math.max(27, Math.round(state.price * (1 + v*0.008)));
-  updatePriceDisplay(false);
+/* small natural oscillation of price to simulate market */
+setInterval(()=>{ 
+  const v = (Math.random()-0.5) * (1 + state.purchases*0.02);
+  state.price = Math.max(27, Math.round(state.price * (1 + v*0.006)));
+  updatePrice(false);
 }, 4200);
 
-/* tiny helper to slowly reduce engagement to baseline */
-setInterval(()=>{ state.engagement = clamp(state.engagement - 0.6, 0, 9999); }, 700);
+/* tiny helpers */
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-/* small demo button to show image warp & microcopy */
-document.getElementById('demoBtn').addEventListener('click', ()=> {
-  bumpEngagement(12);
-  imgMain.animate([{filter:'saturate(1)'},{filter:'saturate(1.35)'},{filter:'saturate(1)'}],{duration:1600});
-  assignedMsg.textContent = 'Você é o escolhido — Continue';
-  assignedMsg.classList.add('show');
-  setTimeout(()=>assignedMsg.classList.remove('show'), 2200);
-});
+/* ====== Accessibility/AR notes ====== */
+/* Replace 'LINK_MODEL_NEURICH.glb', audio and images with your assets.
+   To truly push 4D: integrate WebXR sessions, spatial audio (WebAudio panner nodes),
+   server-driven real purchases for the social ticker, and user-specific personalization APIs.
+*/
 
-/* ========= INITIALIZE PRICE DISPLAY ========= */
-updatePriceDisplay(false);
-
-/* ======= AUTO "YOU ARE CHOSEN" TRIGGER AFTER FIRST INTERACTION ======= */
-let firstInteraction = false;
-['mousemove','touchstart','keydown'].forEach(ev=>{
-  document.addEventListener(ev, ()=>{
-    if(!firstInteraction){
-      firstInteraction = true;
-      assignedMsg.textContent = 'Você foi escolhido — Inicie seu acesso';
-      assignedMsg.classList.add('show');
-      setTimeout(()=>assignedMsg.classList.remove('show'), 2600);
-    }
-  }, {once:true});
-});
-
-/* ========= SAFETY / final notes ========= */
-// Replace link placeholders and image URLs with your assets and real checkout links.
-// This file is self-contained and designed to be pasted directly into a static host.
-
+/* ====== Start small nudge after load ====== */
+setTimeout(()=>{ assigned.textContent = 'YOU ARE CHOSEN — TAP CLAIM'; assigned.style.opacity=1; assigned.style.transform='scale(1)'; setTimeout(()=>assigned.style.opacity=0,2600); }, 1200);
 </script>
 </body>
-  </html>
+</html>
